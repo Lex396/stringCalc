@@ -62,7 +62,7 @@ func check(expression string) []string {
 	// "[\w\s]+"|([-+*//])|\d|("[\w\s]+")
 	// "[^"]*"|[-+*/]|[0-9]
 	// "[a-zA-z0-9_]+[^"]*"|[-+*/]|[0-9]
-	var regx string = "\"[a-zA-z0-9_]+[^\"]*\"|[-+*/]|[0-9]|[a-zA-z0-9_]+[^\"]*"
+	var regx string = "\"[a-zA-z0-9_]+[^\"]*\"|[-+*/]|[0-9]|([a-zA-z]+)$"
 
 	//parts := strings.SplitAfter(expr, "")
 	parts := regexp.MustCompilePOSIX(regx).FindAllString(expr, -1)
