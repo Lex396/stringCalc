@@ -115,6 +115,11 @@ func check(expression string) []string {
 			fmt.Println("неподдерживаемая операция, нельзя делить строку на строку ")
 			os.Exit(1)
 		}
+
+		if parts[1] == "*" {
+			fmt.Println("неподдерживаемая операция, нельзя умножать строку на строку ")
+			os.Exit(1)
+		}
 	}
 
 	return parts
