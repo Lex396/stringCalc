@@ -38,6 +38,10 @@ func calculate(expr []string) string {
 	case "*":
 		res = strings.Repeat(oper1, oper2Int)
 	case "/":
+		if oper2Int == 0 {
+			fmt.Println("нельзя делить на 0 ")
+			os.Exit(1)
+		}
 		for i, r := range oper1 {
 			res = res + string(r)
 			if i > 0 && (i+1)%oper2Int == 0 {
@@ -62,10 +66,11 @@ func check(expression string) []string {
 	// "[\w\s]+"|([-+*//])|\d|("[\w\s]+")
 	// "[^"]*"|[-+*/]|[0-9]
 	// "[a-zA-z0-9_]+[^"]*"|[-+*/]|[0-9]
-	var regx string = "\"[a-zA-z0-9_]+[^\"]*\"|[-+*/]|[0-9]|([a-zA-z]+)$"
+	var regx string = "([a-zA-z0-9_]+[[:punct:]]*[[:space:]])+|\"[a-zA-z0-9_]+[^\"]*\"|[-+*/]|[0-9]|([a-zA-z]+)"
 
-	//parts := strings.SplitAfter(expr, "")
 	parts := regexp.MustCompilePOSIX(regx).FindAllString(expr, -1)
+	parts1 := rmQout(parts[0])
+	parts2 := rmQout(parts[2])
 
 	if len(parts) > 3 {
 		fmt.Print("неверное выражение, много аргументов")
@@ -80,7 +85,7 @@ func check(expression string) []string {
 		os.Exit(1)
 	}
 
-	if len(parts[0]) > 10 {
+	if len(parts1) > 10 {
 		fmt.Println("первым аргументом должна быть строка не более 10 символов")
 		os.Exit(1)
 	}
@@ -101,7 +106,7 @@ func check(expression string) []string {
 		}
 	} else {
 
-		if len(parts[2]) > 10 {
+		if len(parts2) > 10 {
 			fmt.Println("вторым аргументом должна быть строка не более 10 символов")
 			os.Exit(1)
 		}
