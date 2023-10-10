@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
+	"unicode/utf8"
 )
 
 func main() {
@@ -22,7 +23,7 @@ func main() {
 
 func calculate(expr []string) string {
 
-	var res string
+	res := ""
 
 	var oper1 string = rmQout(expr[0])
 	var oper2 string = rmQout(expr[2])
@@ -42,12 +43,15 @@ func calculate(expr []string) string {
 			fmt.Println("нельзя делить на 0 ")
 			os.Exit(1)
 		}
+		leni := utf8.RuneCountInString(oper1) / oper2Int
+
 		for i, r := range oper1 {
-			res = res + string(r)
-			if i > 0 && (i+1)%oper2Int == 0 {
+			res += string(r)
+			if i == leni-1 {
 				break
 			}
 		}
+
 	default:
 		fmt.Println("незвестный оператор")
 		os.Exit(1)
@@ -66,11 +70,13 @@ func check(expression string) []string {
 	// "[\w\s]+"|([-+*//])|\d|("[\w\s]+")
 	// "[^"]*"|[-+*/]|[0-9]
 	// "[a-zA-z0-9_]+[^"]*"|[-+*/]|[0-9]
-	var regx string = "([a-zA-z0-9_]+[[:punct:]]*[[:space:]])+|\"[a-zA-z0-9_]+[^\"]*\"|[-+*/]|[0-9]|([a-zA-z]+)"
+	var regx string = "([a-zA-z0-9_]+[[:punct:]]*[[:space:]])+|\"[a-zA-z0-9_]+[^\"]*\"|[-+*/]|[0-9]*|([a-zA-z]+)"
 
 	parts := regexp.MustCompilePOSIX(regx).FindAllString(expr, -1)
 	parts1 := rmQout(parts[0])
 	parts2 := rmQout(parts[2])
+
+	parts2IsFloat, _ := regexp.MatchString("([0-9]*[,.][0-9]*)", parts2)
 
 	if len(parts) > 3 {
 		fmt.Print("неверное выражение, много аргументов")
@@ -104,6 +110,10 @@ func check(expression string) []string {
 				}
 			}
 		}
+	} else if parts2IsFloat {
+		fmt.Println("Калькулятор умеет работать только с целыми числами ")
+		os.Exit(1)
+
 	} else {
 
 		if len(parts2) > 10 {
